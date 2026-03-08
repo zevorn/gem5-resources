@@ -14,3 +14,7 @@ m5out
 .*.swp
 .*.swo
 .vscode
+src/x86-ubuntu-gpu-ml/files/m5
+src/x86-ubuntu-gpu-ml/vmlinux-*
+src/x86-ubuntu-gpu-ml/disk-image/
+src/x86-ubuntu-gpu-ml/packer_cache/
