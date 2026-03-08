@@ -21,19 +21,25 @@ apt-get install -y build-essential
 rm /etc/update-motd.d/*
 
 # Build the m5 util
-git clone https://github.com/gem5/gem5.git --depth=1 --filter=blob:none --no-checkout --sparse --single-branch --branch=stable
-pushd gem5
-# Checkout just the files we need
-git sparse-checkout add util/m5
-git sparse-checkout add include
-git checkout
-# Build the library and binary
-pushd util/m5
-scons build/x86/out/m5
-cp build/x86/out/m5 /sbin/m5
-popd
-popd
-rm -rf gem5
+if [ -f /home/gem5/m5 ]; then
+    cp /home/gem5/m5 /sbin/m5
+    chmod +x /sbin/m5
+else
+    # Fallback: build from source
+    git clone https://github.com/gem5/gem5.git --depth=1 --filter=blob:none --no-checkout --sparse --single-branch --branch=stable
+    pushd gem5
+    # Checkout just the files we need
+    git sparse-checkout add util/m5
+    git sparse-checkout add include
+    git checkout
+    # Build the library and binary
+    pushd util/m5
+    scons build/x86/out/m5
+    cp build/x86/out/m5 /sbin/m5
+    popd
+    popd
+    rm -rf gem5
+fi
 
 # Occasionally connecting to github fails. Bail now instead of making a disk
 # image that is not usable.

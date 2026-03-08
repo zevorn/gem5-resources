@@ -86,6 +86,11 @@ build {
     source      = "files/gem5_wmi/Makefile"
   }
 
+  provisioner "file" {
+    destination = "/home/gem5/"
+    source      = "files/m5"
+  }
+
   provisioner "shell" {
     execute_command = "echo '${var.ssh_password}' | {{ .Vars }} sudo -E -S bash '{{ .Path }}'"
     scripts         = ["scripts/rocm-install.sh"]
