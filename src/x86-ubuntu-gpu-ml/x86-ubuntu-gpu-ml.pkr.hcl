@@ -91,6 +91,16 @@ build {
     source      = "files/m5"
   }
 
+  provisioner "file" {
+    destination = "/home/gem5/"
+    source      = "files/cosim-gpu-setup.sh"
+  }
+
+  provisioner "file" {
+    destination = "/home/gem5/"
+    source      = "files/cosim-gpu-setup.service"
+  }
+
   provisioner "shell" {
     execute_command = "echo '${var.ssh_password}' | {{ .Vars }} sudo -E -S bash '{{ .Path }}'"
     scripts         = ["scripts/rocm-install.sh"]

@@ -141,4 +141,11 @@ pip3 install --break-system-packages torch torchvision torchaudio --index-url ht
 # Setup gem5 auto login.
 mv /home/gem5/serial-getty@.service /lib/systemd/system/
 
+# Install cosim-gpu-setup service for automatic GPU initialization
+chmod a+x /home/gem5/cosim-gpu-setup.sh
+mv /home/gem5/cosim-gpu-setup.sh /usr/local/bin/cosim-gpu-setup.sh
+mv /home/gem5/cosim-gpu-setup.service /lib/systemd/system/
+systemctl daemon-reload
+systemctl enable cosim-gpu-setup.service
+
 echo -e "\n/home/gem5/run_gem5_app.sh\n" >> /root/.bashrc
