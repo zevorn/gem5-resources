@@ -130,7 +130,7 @@ chmod 777 /usr/lib/firmware/amdgpu/mi350_discovery
 # Package: Pip
 # Language: Python
 # Compute Platfrom: ROCm 6.2.4
-sudo apt -y install pip3
+sudo apt -y install python3-pip
 pip3 install --break-system-packages torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.0
 
 # For a newer version uncomment one below and remove the above install:
