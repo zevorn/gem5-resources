@@ -28,13 +28,25 @@ if [ -e "$FW_DISCOVERY" ]; then
     echo "cosim-gpu-setup: IP discovery firmware linked"
 fi
 
-# Load amdgpu driver
-if [ -f /home/gem5/load_amdgpu.sh ]; then
-    sh /home/gem5/load_amdgpu.sh
-elif [ -f "/lib/modules/$(uname -r)/updates/dkms/amdgpu.ko" ]; then
-    modprobe amdgpu ip_block_mask=0x67 ras_enable=0 discovery=2
+# Load amdgpu driver with cosim-specific parameters.
+# NOTE: Do NOT delegate to /home/gem5/load_amdgpu.sh — that script is designed
+# for standalone gem5 full-system simulation (ip_block_mask=0x6f enables PSP).
+# In cosim (QEMU+KVM+gem5), PSP/SMU are not modeled; ppfeaturemask and dpm
+# must be disabled to prevent the driver from accessing unmodeled registers.
+AMDGPU_ARGS=(ip_block_mask=0x67 ppfeaturemask=0 dpm=0 audio=0 ras_enable=0 discovery=2)
+
+# Kernel cmdline modprobe.blacklist=amdgpu creates a runtime blacklist that
+# causes modprobe to silently skip the module (exit 0 without loading).
+rm -f /run/modprobe.d/*blacklist* 2>/dev/null
+
+if modprobe amdgpu "${AMDGPU_ARGS[@]}" 2>/dev/null; then
+    echo "cosim-gpu-setup: amdgpu loaded (modprobe)"
+elif insmod "/lib/modules/$(uname -r)/updates/dkms/amdgpu.ko.zst" "${AMDGPU_ARGS[@]}" 2>/dev/null; then
+    echo "cosim-gpu-setup: amdgpu loaded (insmod .ko.zst)"
+elif insmod "/lib/modules/$(uname -r)/updates/dkms/amdgpu.ko" "${AMDGPU_ARGS[@]}" 2>/dev/null; then
+    echo "cosim-gpu-setup: amdgpu loaded (insmod .ko)"
 else
-    echo "cosim-gpu-setup: ERROR: amdgpu.ko not found" >&2
+    echo "cosim-gpu-setup: ERROR: failed to load amdgpu" >&2
     exit 1
 fi
 
